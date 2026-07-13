@@ -80,10 +80,21 @@
   font-weight: 500;
 }
 
+.subtitle {
+  color: #666;
+  font-size: 1rem;
+}
+
 .joinBox {
   display: flex;
   gap: 1rem;
+  align-items: flex-start;
   flex-wrap: wrap;
+}
+
+.joinBox .MuiTextField-root {
+  min-width: 220px;
+  flex: 1;
 }
 
 .joinBox button {

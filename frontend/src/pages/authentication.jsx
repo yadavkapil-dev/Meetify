@@ -2,19 +2,17 @@ import * as React from "react";
 import {
   Avatar,
   Button,
-  CssBaseline,
   TextField,
   Paper,
   Box,
   Grid,
   Snackbar,
+  Alert,
+  Typography,
+  CircularProgress,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { AuthContext } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
-
-const defaultTheme = createTheme();
+import { AuthContext } from "../contexts/authContextObject";
 
 export default function Authentication() {
   const [username, setUsername] = React.useState("");
@@ -24,37 +22,49 @@ export default function Authentication() {
   const [message, setMessage] = React.useState("");
   const [formState, setFormState] = React.useState(0);
   const [open, setOpen] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
 
   const { handleRegister, handleLogin } = React.useContext(AuthContext);
-  const navigate = useNavigate();
+
+  const isLogin = formState === 0;
+  const canSubmit = isLogin
+    ? username.trim() && password
+    : name.trim() && username.trim() && password;
 
   const handleAuth = async () => {
+    if (!canSubmit || submitting) return;
+    setError("");
+    setSubmitting(true);
+
     try {
-      if (formState === 0) {
-        // LOGIN
+      if (isLogin) {
         await handleLogin(username, password);
-        navigate("/home");
-      } else if (formState === 1) {
-        // REGISTER
+      } else {
         const result = await handleRegister(name, username, password);
         setMessage(result);
         setOpen(true);
-        setError("");
         setFormState(0);
         setUsername("");
         setPassword("");
         setName("");
-        navigate("/home");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong");
+      setError(err.response?.data?.message || "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAuth();
     }
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <>
       <Grid container component="main" sx={{ height: "100vh" }}>
-        <CssBaseline />
         <Grid
           item
           xs={false}
@@ -73,34 +83,41 @@ export default function Authentication() {
           <Box
             sx={{
               my: 8,
-              mx: 4,
+              mx: "auto",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              maxWidth: 400,
+              px: 2,
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+            <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
               <LockOutlinedIcon />
             </Avatar>
 
-            <Box sx={{ display: "flex", gap: 2 }}>
+            <Typography component="h1" variant="h5" sx={{ fontWeight: 600 }}>
+              {isLogin ? "Welcome back" : "Create your account"}
+            </Typography>
+
+            <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
               <Button
                 variant={formState === 0 ? "contained" : "outlined"}
-                onClick={() => setFormState(0)}
+                onClick={() => { setFormState(0); setError(""); }}
               >
                 Sign In
               </Button>
               <Button
                 variant={formState === 1 ? "contained" : "outlined"}
-                onClick={() => setFormState(1)}
+                onClick={() => { setFormState(1); setError(""); }}
               >
                 Sign Up
               </Button>
             </Box>
 
-            <Box component="form" noValidate sx={{ mt: 1 }}>
+            <Box component="form" noValidate sx={{ mt: 2, width: "100%" }} onKeyDown={handleKeyDown}>
               {formState === 1 && (
                 <TextField
+                  id="auth-name"
                   margin="normal"
                   required
                   fullWidth
@@ -112,6 +129,7 @@ export default function Authentication() {
               )}
 
               <TextField
+                id="auth-username"
                 margin="normal"
                 required
                 fullWidth
@@ -120,6 +138,7 @@ export default function Authentication() {
                 onChange={(e) => setUsername(e.target.value)}
               />
               <TextField
+                id="auth-password"
                 margin="normal"
                 required
                 fullWidth
@@ -129,22 +148,33 @@ export default function Authentication() {
                 onChange={(e) => setPassword(e.target.value)}
               />
 
-              <p style={{ color: "red" }}>{error}</p>
+              {error && (
+                <Alert severity="error" sx={{ mt: 1 }}>
+                  {error}
+                </Alert>
+              )}
 
               <Button
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
                 onClick={handleAuth}
+                disabled={!canSubmit || submitting}
+                startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : null}
               >
-                {formState === 0 ? "Login" : "Register"}
+                {submitting ? "Please wait…" : isLogin ? "Login" : "Register"}
               </Button>
             </Box>
           </Box>
         </Grid>
       </Grid>
 
-      <Snackbar open={open} autoHideDuration={4000} message={message} />
-    </ThemeProvider>
+      <Snackbar
+        open={open}
+        autoHideDuration={4000}
+        onClose={() => setOpen(false)}
+        message={message}
+      />
+    </>
   );
 }

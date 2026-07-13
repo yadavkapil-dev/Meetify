@@ -1,13 +1,17 @@
 import { Server } from "socket.io";
+import { getCorsWhitelist, buildCorsOriginCheck } from "../utils/cors.js";
 
 let connections = {};
 let messages = {};
 let timeOnline = {};
 
 export const connectToServer = (server) => {
+  // Read (and validate) the whitelist when the server actually starts,
+  // not at module-import time — dotenv.config() in app.js may not have
+  // populated process.env yet if this ran at import time instead.
   const io = new Server(server, {
     cors: {
-      origin: "*",
+      origin: buildCorsOriginCheck(getCorsWhitelist()),
       methods: ["GET", "POST"],
       allowedHeaders: ["*"],
       credentials: true,
@@ -24,9 +28,10 @@ export const connectToServer = (server) => {
 
       timeOnline[socket.id] = new Date();
 
-      // Notify all users in room
+      // Notify all users in room, including the existing member list
+      // so the new peer (and everyone else) can set up connections correctly.
       for (let a = 0; a < connections[path].length; a++) {
-        io.to(connections[path][a]).emit("user-joined", socket.id);
+        io.to(connections[path][a]).emit("user-joined", socket.id, connections[path]);
       }
 
       // Send previous messages
@@ -80,8 +85,12 @@ export const connectToServer = (server) => {
           // Remove socket from room
           connections[key].splice(index, 1);
 
-          // Delete room if empty
-          if (connections[key].length === 0) delete connections[key];
+          // Delete room (and its chat history) once empty, so memory
+          // doesn't grow unbounded across the server's lifetime.
+          if (connections[key].length === 0) {
+            delete connections[key];
+            delete messages[key];
+          }
         }
       }
     });

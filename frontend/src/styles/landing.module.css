@@ -28,17 +28,37 @@ nav h2 {
 }
 
 .navButton {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.2rem;
   background-color: #D97500;
   border-radius: 12px;
   text-decoration: none;
   color: white;
-  font-weight: 500;
-  transition: background 0.3s ease;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .navButton:hover {
   background-color: #ff9839;
+  transform: translateY(-1px);
+}
+
+.navButtonGhost {
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.navButtonGhost:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.highlight {
+  color: #FF9839;
 }
 
 .landingMainContainer {
@@ -83,6 +103,25 @@ nav h2 {
   max-width: 100%;
   height: auto;
   border-radius: 20px;
+}
+
+.features {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.feature svg {
+  color: #FF9839;
 }
 
 /* Responsive for tablets */

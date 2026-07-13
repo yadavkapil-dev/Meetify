@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const withAuth = (WrappedComponent) => {
+const withAuth = (Component) => {
   const AuthComponent = (props) => {
     const router = useNavigate();
 
@@ -9,9 +9,9 @@ const withAuth = (WrappedComponent) => {
       if (!localStorage.getItem("token")) {
         router("/auth");
       }
-    }, []);
+    }, [router]);
 
-    return <WrappedComponent {...props} />;
+    return <Component {...props} />;
   };
 
   return AuthComponent;

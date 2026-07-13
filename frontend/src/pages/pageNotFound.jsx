@@ -23,7 +23,7 @@ export default function PageNotFound() {
         sx={{
           fontSize: { xs: '6rem', sm: '8rem' },
           fontWeight: 'bold',
-          color: '#1976d2',
+          color: 'primary.main',
         }}
       >
         404
@@ -58,10 +58,8 @@ export default function PageNotFound() {
           px: 4,
           py: 1.5,
           fontSize: '1rem',
-          borderRadius: '8px',
           boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
           '&:hover': {
-            backgroundColor: '#1565c0',
             boxShadow: '0 6px 16px rgba(0,0,0,0.2)',
           },
         }}

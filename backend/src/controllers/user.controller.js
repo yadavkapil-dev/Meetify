@@ -27,18 +27,20 @@ const login = async (req, res) => {
     user.token = token;
     await user.save();
 
-    console.log("[LOGIN] success:", username);
     return res.status(200).json({ token });
   } catch (e) {
     console.error("[LOGIN] error:", e);
-    return res.status(500).json({ message: `Something went wrong ${e}` });
+    return res.status(500).json({ message: "Something went wrong. Please try again." });
   }
 };
 
 // REGISTER
 const register = async (req, res) => {
   const { name, username, password } = req.body;
-  console.log("[REGISTER] incoming:", { name, username });
+
+  if (!name || !username || !password) {
+    return res.status(400).json({ message: "Please provide name, username & password" });
+  }
 
   try {
     const existingUser = await User.findOne({ username });
@@ -50,41 +52,53 @@ const register = async (req, res) => {
     const newUser = new User({ name, username, password: hashedPassword });
     await newUser.save();
 
-    console.log("[REGISTER] created:", username);
     res.status(httpStatus.CREATED).json({ message: "User Registered" });
   } catch (e) {
     console.error("[REGISTER] error:", e);
-    res.status(500).json({ message: `Something went wrong ${e}` });
+    res.status(500).json({ message: "Something went wrong. Please try again." });
   }
 };
 
 // GET USER HISTORY
 const getUserHistory = async (req, res) => {
   const { token } = req.query;
+  if (!token) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+
   try {
     const user = await User.findOne({ token });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(401).json({ message: "Not authenticated" });
 
-    const meetings = await Meeting.find({ user_id: user.username });
+    const meetings = await Meeting.find({ user_id: user.username }).sort({ date: -1 });
     res.json(meetings);
   } catch (e) {
-    res.status(500).json({ message: `Something went wrong ${e}` });
+    console.error("[GET_HISTORY] error:", e);
+    res.status(500).json({ message: "Something went wrong. Please try again." });
   }
 };
 
 // ADD TO HISTORY
 const addToHistory = async (req, res) => {
   const { token, meeting_code } = req.body;
+  if (!token) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+  if (!meeting_code || !meeting_code.trim()) {
+    return res.status(400).json({ message: "Please provide a meeting code" });
+  }
+
   try {
     const user = await User.findOne({ token });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(401).json({ message: "Not authenticated" });
 
-    const newMeeting = new Meeting({ user_id: user.username, meetingCode: meeting_code });
+    const newMeeting = new Meeting({ user_id: user.username, meetingCode: meeting_code.trim() });
     await newMeeting.save();
 
     res.status(201).json({ message: "Added code to history" });
   } catch (e) {
-    res.status(500).json({ message: `Something went wrong ${e}` });
+    console.error("[ADD_HISTORY] error:", e);
+    res.status(500).json({ message: "Something went wrong. Please try again." });
   }
 };
 

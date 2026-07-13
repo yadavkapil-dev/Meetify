@@ -1,4 +1,7 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import theme from './theme';
 import LandingPage from './pages/landing';
 import Authentication from './pages/authentication';
 import { AuthProvider } from './contexts/AuthContext';
@@ -9,7 +12,8 @@ import PageNotFound from './pages/pageNotFound';
 
 function App() {
   return (
-    <div className="App">
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Router>
         <AuthProvider>
           <Routes>
@@ -23,7 +27,7 @@ function App() {
           </Routes>
         </AuthProvider>
       </Router>
-    </div>
+    </ThemeProvider>
   );
 }
 

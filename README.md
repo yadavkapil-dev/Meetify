@@ -9,6 +9,17 @@ Meetify is a real-time video meeting app. Users register and log in, create or j
 
 Both are hosted on Render's free tier, so the first request after a period of inactivity can take a while to respond while the instance spins back up.
 
+## Try It Out
+
+No signup needed — log in with the shared demo account:
+
+- **Username:** `demo`
+- **Password:** `demo1234`
+
+This is a shared account, so meeting history is visible to anyone who logs in with it.
+
+To test a call: open the app in two browser windows (or two devices), log in, and join the same meeting code from both.
+
 ## Tech Stack
 
 **Backend**

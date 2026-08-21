@@ -42,6 +42,11 @@ app.use((err, req, res, next) => {
 
 // Start server and connect to MongoDB
 const start = async () => {
+  if (!process.env.MONGO_URI) {
+    console.error("Missing required environment variable: MONGO_URI. Set it in your .env file (see .env.example).");
+    process.exit(1);
+  }
+
   try {
     const connectionDB = await mongoose.connect(process.env.MONGO_URI);
     console.log(`MongoDB connected: ${connectionDB.connection.host}`);

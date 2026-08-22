@@ -63,7 +63,7 @@ To test a call: open the app in two browser windows (or two devices), log in, an
 ### Install
 
 ```bash
-git clone https://github.com/Noobod/Meetify.git
+git clone https://github.com/yadavkapil-dev/Meetify.git
 cd Meetify
 
 cd backend && npm install

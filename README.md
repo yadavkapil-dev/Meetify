@@ -20,6 +20,8 @@ This is a shared account, so meeting history is visible to anyone who logs in wi
 
 To test a call: open the app in two browser windows (or two devices), log in, and join the same meeting code from both.
 
+**Note:** Video connections may fail if participants are on mobile data or restrictive corporate networks. This demo uses STUN only (no TURN relay server), so peers behind symmetric NAT can't establish a direct connection. Use WiFi for best results.
+
 ## Tech Stack
 
 **Backend**
